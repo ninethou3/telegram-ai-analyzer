@@ -1,4 +1,6 @@
 # analyzers/rag_analyzer.py
+import traceback
+
 from .base_analyzer import BaseAnalyzer
 
 
@@ -38,25 +40,32 @@ class RagAnalyzer(BaseAnalyzer):
             historical_summary = "\n\n".join(all_contexts) if all_contexts else "Нет исторического контекста"
 
             user_section = f"""
-            ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ:
-            {user_context}
-            """ if user_context else ""
+                            ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ (адаптируй ответ под него):
+                            {user_context}
+                            """ if user_context else ""
 
             final_prompt = f"""
-Анализ канала {channel}
+                ТЫ — ПРОФЕССИОНАЛЬНЫЙ ФИНАНСОВЫЙ АНАЛИТИК. Твоя задача — проанализировать данные из канала {channel}.
+                Используй ТОЛЬКО предоставленную ниже информацию.
 
-{user_section}
-Ключевые темы сегодня: {', '.join(topics)}
+                {user_section}
 
-ИСТОРИЧЕСКИЙ КОНТЕКСТ ПО ТЕМАМ:
-{historical_summary}
+                КЛЮЧЕВЫЕ ТЕМЫ СЕГОДНЯ:
+                {', '.join(topics)}
 
-НОВЫЕ СООБЩЕНИЯ:
-{" ".join([m['text'][:100] for m in messages[:5]])}
+                ИСТОРИЧЕСКИЙ КОНТЕКТ (для сравнения):
+                {historical_summary}
 
-{'Сделай анализ с персональными рекомендациями для этого пользователя.' 
-            if user_context else 'Сделай сравнительный анализ: что изменилось, что продолжается?'}
-"""
+                НОВЫЕ СООБЩЕНИЯ (текущая ситуация):
+                {" ".join([m['text'] for m in messages[:3]])}
+
+                ЗАДАНИЕ:
+                1. Проведи сравнительный анализ: что изменилось в темах по сравнению с историей?
+                2. Если есть ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ, дай конкретные рекомендации.
+                3. Пиши кратко, по делу, без общих фраз.
+
+                ОТВЕТ НА РУССКОМ ЯЗЫКЕ:
+                """
 
             result = self._call_ai(final_prompt)
 

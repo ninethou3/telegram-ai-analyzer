@@ -10,6 +10,7 @@ class Config:
         self.token = os.getenv('TELEGRAM_BOT_TOKEN')
         self.chat_id = os.getenv('TELEGRAM_CHAT_ID')
         self.deepseek_api_key = os.getenv('DEEPSEEK_API_KEY')
+        self.gemma_api_key = os.getenv('GEMMA_API_KEY')
 
         # Инициализация компонентов
         self.storage = JSONStorage()
@@ -18,14 +19,7 @@ class Config:
         # Настройки
         self.default_channel = "spydell_finance"
         self.deepseek_base_url = "https://api.deepseek.com/v1"
+        self.gemma_base_url = "http://localhost:2276/v1"
+        self.gemma_model = "Gemma 3n E4B"  # Укажите точное имя вашей локальной модели
 
         # Валидация
-        self._validate()
-
-    def _validate(self):
-        if not self.token:
-            raise ValueError("TELEGRAM_BOT_TOKEN не установлен")
-        if not self.chat_id:
-            raise ValueError("TELEGRAM_CHAT_ID не установлен")
-        if not self.deepseek_api_key:
-            raise ValueError("DEEPSEEK_API_KEY не установлен")

@@ -16,12 +16,24 @@ class BaseAnalyzer(ABC):
 
     def _call_ai(self, prompt):
         """Общий метод для вызова AI"""
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=self.max_tokens
-        )
-        return response.choices[0].message.content
+        try:
+            print(f"📡 [AI Call] Модель: {self.model}, URL: {self.client.base_url}")
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=self.max_tokens,
+                temperature = 0.7  # Добавим немного креативности
+            )
+            content = response.choices[0].message.content
+            if not content:
+                print("⚠️ [AI Call] Модель вернула пустой ответ!")
+                return "Модель не смогла сформулировать ответ."
+
+            print(f"📩 [AI Call] Получен ответ ({len(content)} симв.)")
+            return content
+        except Exception as e:
+            print(f"❌ [AI Call] Ошибка при вызове: {e}")
+            return f"Ошибка AI: {str(e)}"
 
     def _format_messages(self, messages, limit=10, max_length=200):
         """Форматирование сообщений для промпта"""
