@@ -26,8 +26,9 @@ class AICoordinator:
                 base_url=self.config.deepseek_base_url
             ),
             'rag': RagAnalyzer(
-                api_key=self.config.deepseek_api_key,
-                base_url=self.config.deepseek_base_url,
+                api_key=self.config.gemma_api_key,
+                base_url=self.config.gemma_base_url,
+                model=self.config.gemma_model,  # Обязательно передаем имя модели
                 rag_processor=self.rag
             )
         }
